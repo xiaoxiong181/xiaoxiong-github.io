@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet icon" href="./tbjpg.jpg">
+    <title>作品展示 - 平面设计 & 平面制作</title>
+    <style>
+      /* ========== 基础样式 ========== */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        background-color: #f9f6fc;
+        font-family: "Microsoft YaHei", sans-serif;
+        color: #333;
+        padding-top: 80px;
+      }
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
+
+      /* ========== 头部导航 ========== */
+      .header {
+        width: 100%;
+        height: 80px;
+        padding: 0 5%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #fff;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 9999;
+        box-shadow: 0 2px 10px rgba(156, 39, 176, 0.1);
+        border-bottom: 2px solid #9c27b0;
+      }
+      .logo h1 {
+        color: #9c27b0;
+        font-size: 24px;
+        letter-spacing: 1px;
+      }
+      .nav {
+        display: flex;
+        align-items: center;
+      }
+      .nav a {
+        font-size: 16px;
+        margin-left: 30px;
+        padding: 5px 10px;
+        border-radius: 5px;
+        transition: all 0.3s ease;
+        color: #333;
+      }
+      .nav a:hover {
+        background: #9c27b0;
+        color: #fff;
+      }
+      .menu-btn {
+        display: none;
+        font-size: 28px;
+        color: #9c27b0;
+        cursor: pointer;
+      }
+
+      /* ========== 主容器 ========== */
+      .works-container {
+        width: 80%;
+        max-width: 1200px;
+        margin: 40px auto;
+      }
+      .page-title {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+      .page-title h2 {
+        color: #9c27b0;
+        font-size: 32px;
+        margin-bottom: 10px;
+      }
+      .page-title p {
+        color: #666;
+        font-size: 16px;
+      }
+
+      /* ========== 分类标签 ========== */
+      .category-tabs {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-bottom: 40px;
+      }
+      .category-tabs button {
+        padding: 10px 24px;
+        border: 2px solid #ce93d8;
+        background: #fff;
+        color: #7b1fa2;
+        border-radius: 30px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+      .category-tabs button.active,
+      .category-tabs button:hover {
+        background: #9c27b0;
+        color: #fff;
+        border-color: #9c27b0;
+      }
+
+      /* ========== 作品网格 ========== */
+      .works-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 30px;
+      }
+      .work-card {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .work-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      }
+      .work-card img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        cursor: pointer;
+      }
+      .work-info {
+        padding: 15px;
+      }
+      .work-info h4 {
+        color: #7b1fa2;
+        font-size: 17px;
+        margin-bottom: 8px;
+      }
+      .work-info p {
+        font-size: 14px;
+        color: #555;
+        margin-bottom: 10px;
+      }
+      .work-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 10px;
+      }
+      .work-tags span {
+        padding: 3px 8px;
+        background: #f3e5f5;
+        color: #9c27b0;
+        border-radius: 4px;
+        font-size: 12px;
+      }
+      .work-links {
+        display: flex;
+        gap: 10px;
+        font-size: 13px;
+      }
+      .work-links a {
+        color: #9c27b0;
+        border: 1px solid #ce93d8;
+        padding: 4px 10px;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+      }
+      .work-links a:hover {
+        background: #9c27b0;
+        color: #fff;
+        border-color: #9c27b0;
+      }
+
+      /* ========== 图片放大模态框 ========== */
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 10000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.85);
+        justify-content: center;
+        align-items: center;
+      }
+      .modal img {
+        max-width: 90%;
+        max-height: 80%;
+        border-radius: 8px;
+      }
+      .modal-close {
+        position: absolute;
+        top: 30px;
+        right: 40px;
+        font-size: 40px;
+        color: #fff;
+        cursor: pointer;
+      }
+
+      /* ========== 页脚 ========== */
+      footer {
+        text-align: center;
+        padding: 20px;
+        color: #7b1fa2;
+        background: #f3e5f5;
+        margin-top: 60px;
+        font-size: 14px;
+      }
+
+      /* ========== 响应式 ========== */
+      @media (max-width: 768px) {
+        .nav {
+          display: none;
+          flex-direction: column;
+          width: 100%;
+          background: #fff;
+          position: absolute;
+          top: 80px;
+          left: 0;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+          padding: 10px 0;
+        }
+        .nav a {
+          margin: 5px 0;
+          text-align: center;
+          width: 100%;
+        }
+        .menu-btn {
+          display: block;
+        }
+        .nav.active {
+          display: flex;
+        }
+        .works-container {
+          width: 92%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 头部导航 -->
+    <header class="header">
+      <div class="logo"><h1>熊洁·个人主页</h1></div>
+      <div class="menu-btn" id="menuBtn">☰</div>
+      <nav class="nav" id="navMenu">
+        <a href="index.html">首页</a>
+        <a href="2.html">博客列表</a>
+        <a href="3.html">博客详情</a>
+        <a href="4.html">作品展示</a>
+        <a href="5.html">联系方式</a>
+      </nav>
+    </header>
+
+    <!-- 主容器 -->
+    <div class="works-container">
+      <div class="page-title">
+        <h2>作品展示</h2>
+        <p>记录平面设计与平面制作的精选作品</p>
+      </div>
+
+      <!-- 分类标签 -->
+      <div class="category-tabs">
+        <button class="active" onclick="switchCategory('graphic')">
+          平面设计
+        </button>
+        <button onclick="switchCategory('code')">平面制作</button>
+      </div>
+
+      <!-- 平面设计 -->
+      <div id="graphic" class="works-grid">
+        <div class="work-card">
+          <img
+            src="https://via.placeholder.com/400x300/9c27b0/ffffff?text=海报设计A"
+            alt="海报设计A"
+            onclick="openModal(this.src)"
+          />
+          <div class="work-info">
+            <h4>音乐节海报</h4>
+            <p>2026 春季音乐节主题海报，融合渐变与几何元素</p>
+            <div class="work-tags"><span>海报</span><span>渐变</span></div>
+          </div>
+        </div>
+        <div class="work-card">
+          <img
+            src="https://via.placeholder.com/400x300/7b1fa2/ffffff?text=品牌LOGO"
+            alt="品牌LOGO"
+            onclick="openModal(this.src)"
+          />
+          <div class="work-info">
+            <h4>咖啡品牌 LOGO</h4>
+            <p>极简线条与温暖配色，传达咖啡香气与温度</p>
+            <div class="work-tags"><span>LOGO</span><span>品牌</span></div>
+          </div>
+        </div>
+        <div class="work-card">
+          <img
+            src="https://via.placeholder.com/400x300/ce93d8/333333?text=插画设计"
+            alt="插画设计"
+            onclick="openModal(this.src)"
+          />
+          <div class="work-info">
+            <h4>城市插画系列</h4>
+            <p>扁平化风格描绘城市地标，色彩明快</p>
+            <div class="work-tags"><span>插画</span><span>扁平风</span></div>
+          </div>
+        </div>
+        <div class="work-card">
+          <img
+            src="https://via.placeholder.com/400x300/f3e5f5/333333?text=字体设计"
+            alt="字体设计"
+            onclick="openModal(this.src)"
+          />
+          <div class="work-info">
+            <h4>创意字体海报</h4>
+            <p>手写风格与印刷排版结合，突出文字情绪</p>
+            <div class="work-tags"><span>字体</span><span>排版</span></div>
+          </div>
+        </div>
+        <div class="work-card">
+          <img
+            src="https://via.placeholder.com/400x300/9c27b0/ffffff?text=包装设计"
+            alt="包装设计"
+            onclick="openModal(this.src)"
+          />
+          <div class="work-info">
+            <h4>茶叶礼盒包装</h4>
+            <p>国风插画与烫金工艺，提升礼品质感</p>
+            <div class="work-tags"><span>包装</span><span>国风</span></div>
+          </div>
+        </div>
+        <div class="work-card">
+          <img
+            src="https://via.placeholder.com/400x300/7b1fa2/ffffff?text=UI套件"
+            alt="UI套件"
+            onclick="openModal(this.src)"
+          />
+          <div class="work-info">
+            <h4>移动端 UI Kit</h4>
+            <p>深色主题社交应用，组件齐全可复用</p>
+            <div class="work-tags"><span>UI</span><span>深色模式</span></div>
+          </div>
+        </div>
+        <div class="work-card">
+          <img
+            src="https://via.placeholder.com/400x300/ce93d8/333333?text=banner设计"
+            alt="banner设计"
+            onclick="openModal(this.src)"
+          />
+          <div class="work-info">
+            <h4>电商 banner</h4>
+            <p>双 11 大促主视觉，动感与促销氛围兼具</p>
+            <div class="work-tags"><span>banner</span><span>促销</span></div>
+          </div>
+        </div>
+        <div class="work-card">
+          <img
+            src="https://via.placeholder.com/400x300/f3e5f5/333333?text=图标设计"
+            alt="图标设计"
+            onclick="openModal(this.src)"
+          />
+          <div class="work-info">
+            <h4>线性图标系统</h4>
+            <p>统一 1.5 px 线宽，覆盖常用功能场景</p>
+            <div class="work-tags"><span>图标</span><span>线性</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 平面制作 -->
+      <div id="code" class="works-grid" style="display: none">
+        <div class="work-card">
+          <img
+            src="https://via.placeholder.com/400x300/9c27b0/ffffff?text=个人简历"
+            alt="个人简历"
+          />
+          <div class="work-info">
+            <h4>响应式个人简历</h4>
+            <p>单页滚动 + 平滑动画，适配多端</p>
+            <div class="work-tags"><span>HTML</span><span>CSS</span></div>
+            <div class="work-links">
+              <a href="https://example.com/resume" target="_blank">在线演示</a>
+              <a href="https://github.com/yourname/resume" target="_blank"
+                >源码</a
+              >
+            </div>
+          </div>
+        </div>
+        <div class="work-card">
+          <img
+            src="https://via.placeholder.com/400x300/7b1fa2/ffffff?text=企业官网"
+            alt="企业官网"
+          />
+          <div class="work-info">
+            <h4>科技公司官网</h4>
+            <p>Vue3 + Tailwind，SSR 优化 SEO</p>
+            <div class="work-tags"><span>Vue</span><span>Tailwind</span></div>
+            <div class="work-links">
+              <a href="https://example.com/tech" target="_blank">在线演示</a>
+              <a href="https://github.com/yourname/tech-site" target="_blank"
+                >源码</a
+              >
+            </div>
+          </div>
+        </div>
+        <div class="work-card">
+          <img
+            src="https://via.placeholder.com/400x300/ce93d8/333333?text=小程序"
+            alt="小程序"
+          />
+          <div class="work-info">
+            <h4>校园二手小程序</h4>
+            <p>微信小程序云开发，支持发布/搜索/私信</p>
+            <div class="work-tags"><span>小程序</span><span>云开发</span></div>
+            <div class="work-links">
+              <a
+                href="https://github.com/yourname/campus-market"
+                target="_blank"
+                >源码</a
+              >
+            </div>
+          </div>
+        </div>
+        <div class="work-card">
+          <img
+            src="https://via.placeholder.com/400x300/f3e5f5/333333?text=管理后台"
+            alt="管理后台"
+          />
+          <div class="work-info">
+            <h4>电商管理后台</h4>
+            <p>React + Ant Design，权限动态路由</p>
+            <div class="work-tags"><span>React</span><span>Antd</span></div>
+            <div class="work-links">
+              <a href="https://example.com/admin" target="_blank">在线演示</a>
+              <a href="https://github.com/yourname/admin" target="_blank"
+                >源码</a
+              >
+            </div>
+          </div>
+        </div>
+        <div class="work-card">
+          <img
+            src="https://via.placeholder.com/400x300/9c27b0/ffffff?text=可视化"
+            alt="可视化"
+          />
+          <div class="work-info">
+            <h4>疫情数据大屏</h4>
+            <p>ECharts 实现地图热力 + 折线趋势</p>
+            <div class="work-tags"><span>ECharts</span><span>大屏</span></div>
+            <div class="work-links">
+              <a href="https://example.com/covid" target="_blank">在线演示</a>
+              <a href="https://github.com/yourname/covid-screen" target="_blank"
+                >源码</a
+              >
+            </div>
+          </div>
+        </div>
+        <div class="work-card">
+          <img
+            src="https://via.placeholder.com/400x300/7b1fa2/ffffff?text=动画官网"
+            alt="动画官网"
+          />
+          <div class="work-info">
+            <h4>Three.js 3D 官网</h4>
+            <p>WebGL 粒子动画，滚动触发交互</p>
+            <div class="work-tags"><span>Three.js</span><span>WebGL</span></div>
+            <div class="work-links">
+              <a href="https://example.com/3d" target="_blank">在线演示</a>
+              <a href="https://github.com/yourname/3d-site" target="_blank"
+                >源码</a
+              >
+            </div>
+          </div>
+        </div>
+        <div class="work-card">
+          <img
+            src="https://via.placeholder.com/400x300/ce93d8/333333?text=插件开发"
+            alt="插件开发"
+          />
+          <div class="work-info">
+            <h4>Figma 插件 - 批量重命名</h4>
+            <p>一键批量规范图层命名，支持正则</p>
+            <div class="work-tags"><span>Figma</span><span>插件</span></div>
+            <div class="work-links">
+              <a href="https://github.com/yourname/figma-rename" target="_blank"
+                >源码</a
+              >
+            </div>
+          </div>
+        </div>
+        <div class="work-card">
+          <img
+            src="https://via.placeholder.com/400x300/f3e5f5/333333?text=低代码"
+            alt="低代码"
+          />
+          <div class="work-info">
+            <h4>海报生成器</h4>
+            <p>Canvas + JSON 模板，一键导出海报</p>
+            <div class="work-tags"><span>Canvas</span><span>低代码</span></div>
+            <div class="work-links">
+              <a href="https://example.com/poster" target="_blank">在线演示</a>
+              <a href="https://github.com/yourname/poster-gen" target="_blank"
+                >源码</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 图片放大模态框 -->
+    <div id="imageModal" class="modal">
+      <span class="modal-close" onclick="closeModal()">&times;</span>
+      <img id="modalImg" src="" alt="放大图片" />
+    </div>
+
+    <!-- 页脚 -->
+    <footer>
+      <p>© 2026 网页设计个人网站 版权所有</p>
+    </footer>
+
+    <script>
+      // 移动端菜单
+      const menuBtn = document.getElementById("menuBtn");
+      const navMenu = document.getElementById("navMenu");
+      menuBtn.addEventListener("click", () => {
+        navMenu.classList.toggle("active");
+        menuBtn.textContent = navMenu.classList.contains("active") ? "✕" : "☰";
+      });
+
+      // 分类切换
+      function switchCategory(type) {
+        const tabs = document.querySelectorAll(".category-tabs button");
+        tabs.forEach((btn) => btn.classList.remove("active"));
+        event.target.classList.add("active");
+
+        document.getElementById("graphic").style.display =
+          type === "graphic" ? "grid" : "none";
+        document.getElementById("code").style.display =
+          type === "code" ? "grid" : "none";
+      }
+
+      // 图片放大
+      function openModal(src) {
+        const modal = document.getElementById("imageModal");
+        modal.style.display = "flex";
+        document.getElementById("modalImg").src = src;
+      }
+      function closeModal() {
+        document.getElementById("imageModal").style.display = "none";
+      }
+      // 点击模态框外部关闭
+      window.onclick = function (e) {
+        const modal = document.getElementById("imageModal");
+        if (e.target === modal) modal.style.display = "none";
+      };
+    </script>
+  </body>
+</html>
