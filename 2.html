@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet icon" href="pp.jpg">
+    <title>博客列表 - 网页设计个人网站</title>
+    <style>
+      /* ========== 基础样式重置 ========== */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background-color: #f9f6fc;
+        font-family: "Microsoft YaHei", sans-serif;
+        color: #333;
+        padding-top: 80px;
+        line-height: 1.6;
+      }
+
+      /* ========== 头部导航 ========== */
+      .header {
+        width: 100%;
+        height: 80px;
+        padding: 0 5%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #fff;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 9999;
+        box-shadow: 0 2px 10px rgba(156, 39, 176, 0.1);
+        border-bottom: 2px solid #9c27b0;
+      }
+
+      .logo h1 {
+        color: #9c27b0;
+        font-size: 24px;
+        letter-spacing: 1px;
+      }
+
+      .nav {
+        display: flex;
+        align-items: center;
+      }
+
+      .nav a {
+        text-decoration: none;
+        font-size: 16px;
+        margin-left: 30px;
+        padding: 5px 10px;
+        border-radius: 5px;
+        transition: all 0.3s ease;
+        color: #333;
+      }
+
+      .nav a:hover {
+        background: #9c27b0;
+        color: #fff;
+      }
+
+      .menu-btn {
+        display: none;
+        font-size: 28px;
+        color: #9c27b0;
+        cursor: pointer;
+        user-select: none; /* 禁止选中按钮文字 */
+      }
+
+      /* ========== 主容器 ========== */
+      .blog-container {
+        width: 80%;
+        max-width: 1200px;
+        margin: 50px auto;
+        display: flex;
+        gap: 30px;
+      }
+
+      /* ========== 左侧文章区 ========== */
+      .main-content {
+        flex: 1;
+      }
+
+      .page-title {
+        background: #fff;
+        padding: 25px 30px;
+        border-radius: 12px;
+        box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+        margin-bottom: 30px;
+      }
+
+      .page-title h2 {
+        color: #9c27b0;
+        font-size: 26px;
+        margin-bottom: 10px;
+      }
+
+      .page-title p {
+        color: #666;
+        font-size: 15px;
+      }
+
+      /* 筛选区 */
+      .filter-bar {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 25px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .filter-bar select,
+      .filter-bar button {
+        padding: 8px 16px;
+        border: 1px solid #ce93d8;
+        border-radius: 5px;
+        background: #fff;
+        color: #7b1fa2;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .filter-bar button:hover,
+      .filter-bar select:hover {
+        background: #9c27b0;
+        color: #fff;
+        border-color: #9c27b0;
+      }
+
+      /* 无结果提示 */
+      .empty-tip {
+        display: none;
+        text-align: center;
+        padding: 50px 0;
+        color: #999;
+        font-size: 16px;
+      }
+
+      /* 文章列表 */
+      .article-list {
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
+      }
+
+      .article-row {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        padding: 25px;
+        display: flex;
+        gap: 25px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .article-row:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* 增强 hover 阴影 */
+      }
+
+      .article-row img {
+        width: 180px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 8px;
+        flex-shrink: 0;
+      }
+
+      .article-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .article-info h3 {
+        color: #9c27b0;
+        font-size: 18px;
+        margin-bottom: 8px;
+      }
+
+      .article-excerpt {
+        color: #555;
+        font-size: 14px;
+        margin-bottom: 10px;
+        flex: 1;
+      }
+
+      .article-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 13px;
+        color: #999;
+      }
+
+      .article-meta .tags span {
+        display: inline-block;
+        padding: 3px 8px;
+        background: #f3e5f5;
+        color: #9c27b0;
+        border-radius: 4px;
+        margin-right: 6px;
+        font-size: 12px;
+      }
+
+      /* 分页 */
+      .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 40px;
+        flex-wrap: wrap; /* 适配小屏分页按钮换行 */
+      }
+
+      .pagination a {
+        padding: 8px 14px;
+        background: #fff;
+        border: 1px solid #ce93d8;
+        color: #7b1fa2;
+        border-radius: 5px;
+        text-decoration: none;
+        font-size: 14px;
+        transition: all 0.3s ease;
+      }
+
+      .pagination a:hover,
+      .pagination a.active {
+        background: #9c27b0;
+        color: #fff;
+        border-color: #9c27b0;
+      }
+
+      /* ========== 侧边栏 ========== */
+      .sidebar {
+        width: 300px;
+        flex-shrink: 0; /* 防止侧边栏被压缩 */
+      }
+
+      .widget {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        padding: 20px;
+        margin-bottom: 25px;
+      }
+
+      .widget h4 {
+        color: #7b1fa2;
+        font-size: 17px;
+        margin-bottom: 15px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #ce93d8;
+      }
+
+      .widget ul {
+        list-style: none;
+        font-size: 14px;
+        line-height: 1.8;
+      }
+
+      .widget ul li {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px; /* 增加列表项间距 */
+      }
+
+      .widget ul li a {
+        color: #333;
+        text-decoration: none;
+        transition: color 0.3s ease;
+      }
+
+      .widget ul li a:hover {
+        color: #9c27b0;
+      }
+
+      .hot-articles li a {
+        display: block;
+        color: #555;
+        font-size: 14px;
+      }
+
+      .tags-cloud {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .tags-cloud .tag {
+        padding: 6px 12px;
+        background: #f3e5f5;
+        color: #7b1fa2;
+        border-radius: 20px;
+        font-size: 13px;
+        cursor: pointer; /* 标签添加鼠标指针 */
+        transition: all 0.3s ease;
+      }
+
+      .tags-cloud .tag:hover {
+        background: #9c27b0;
+        color: #fff;
+      }
+
+      /* ========== 页脚 ========== */
+      footer {
+        text-align: center;
+        padding: 20px;
+        color: #7b1fa2;
+        background: #f3e5f5;
+        margin-top: 60px;
+        font-size: 14px;
+      }
+
+      /* ========== 响应式适配 ========== */
+      /* 平板端 (1024px 以下) */
+      @media (max-width: 1024px) {
+        .blog-container {
+          flex-direction: column;
+        }
+
+        .sidebar {
+          width: 100%;
+          display: flex;
+          gap: 20px;
+          flex-wrap: wrap; /* 防止侧边栏组件溢出 */
+        }
+
+        .widget {
+          flex: 1;
+          min-width: 250px; /* 保证组件最小宽度 */
+        }
+      }
+
+      /* 手机端 (768px 以下) */
+      @media (max-width: 768px) {
+        .nav {
+          display: none;
+          flex-direction: column;
+          width: 100%;
+          background: #fff;
+          position: absolute;
+          top: 80px;
+          left: 0;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+          padding: 10px 0;
+        }
+
+        .nav a {
+          margin: 5px 0;
+          text-align: center;
+          width: 100%; /* 导航链接占满宽度 */
+        }
+
+        .menu-btn {
+          display: block;
+        }
+
+        .nav.active {
+          display: flex;
+        }
+
+        .sidebar {
+          flex-direction: column;
+        }
+
+        .article-row {
+          flex-direction: column;
+        }
+
+        .article-row img {
+          width: 100%;
+          height: auto; /* 图片自适应宽度 */
+        }
+
+        .blog-container {
+          width: 92%; /* 手机端增大容器宽度 */
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 头部导航 -->
+    <header class="header">
+      <div class="logo"><h1>熊洁·个人主页</h1></div>
+      <div class="menu-btn" id="menuBtn">☰</div>
+      <nav class="nav" id="navMenu">
+        <a href="1.html">首页</a>
+        <a href="2.html">博客列表</a>
+        <a href="3.html">博客详情</a>
+        <a href="4.html">作品展示</a>
+        <a href="5.html">联系方式</a>
+      </nav>
+    </header>
+
+    <!-- 博客列表主容器 -->
+    <div class="blog-container">
+      <!-- 左侧内容区 -->
+      <main class="main-content">
+        <!-- 页面标题与描述 -->
+        <div class="page-title">
+          <h2>所有文章</h2>
+          <p>记录前端学习、设计思考与技术实践，共 21 篇</p>
+        </div>
+
+        <!-- 文章筛选区 -->
+        <div class="filter-bar">
+          <select id="categoryFilter">
+            <option value="">全部分类</option>
+            <option value="前端">前端</option>
+            <option value="随笔">随笔</option>
+            <option value="技术">技术</option>
+          </select>
+          <select id="tagFilter">
+            <option value="">全部标签</option>
+            <option value="CSS">CSS</option>
+            <option value="JavaScript">JavaScript</option>
+            <option value="Vue">Vue</option>
+            <option value="设计">设计</option>
+          </select>
+          <button onclick="filterArticles()">筛选</button>
+          <button onclick="resetFilter()" style="margin-left: auto">
+            重置筛选
+          </button>
+        </div>
+
+        <!-- 无结果提示 -->
+        <div class="empty-tip" id="emptyTip">暂无符合条件的文章</div>
+
+        <!-- 文章列表区 -->
+        <div class="article-list" id="articleList">
+          <!-- 文章 1 -->
+          <article class="article-row" data-category="前端" data-tag="CSS">
+            <img
+              src="https://via.placeholder.com/300x180/9c27b0/ffffff?text=CSS+Grid"
+              alt="CSS Grid 布局的高级技巧"
+              loading="lazy"
+            />
+            <div class="article-info">
+              <h3>CSS Grid 布局的高级技巧</h3>
+              <p class="article-excerpt">
+                CSS Grid
+                是现代网页布局的强大工具，本文将带你深入探索其高级用法，实现复杂而灵活的页面布局，包括自适应区域、命名网格线以及网格嵌套的最佳实践。
+              </p>
+              <div class="article-meta">
+                <div class="tags">
+                  <span>前端</span>
+                  <span>CSS</span>
+                </div>
+                <span>2026-01-01 · 阅读量 1,234 · 评论 12</span>
+              </div>
+            </div>
+          </article>
+
+          <!-- 文章 2 -->
+          <article class="article-row" data-category="前端" data-tag="设计">
+            <img
+              src="https://via.placeholder.com/300x180/7b1fa2/ffffff?text=Responsive"
+              alt="响应式设计的最佳实践"
+              loading="lazy"
+            />
+            <div class="article-info">
+              <h3>响应式设计的最佳实践</h3>
+              <p class="article-excerpt">
+                在多设备时代，响应式设计至关重要。本文总结了一套行之有效的响应式设计工作流和最佳实践，从移动优先到弹性图片，从断点选择到内容策略。
+              </p>
+              <div class="article-meta">
+                <div class="tags">
+                  <span>前端</span>
+                  <span>设计</span>
+                </div>
+                <span>2026-01-05 · 阅读量 987 · 评论 8</span>
+              </div>
+            </div>
+          </article>
+
+          <!-- 文章 3 -->
+          <article
+            class="article-row"
+            data-category="技术"
+            data-tag="JavaScript"
+          >
+            <img
+              src="https://via.placeholder.com/300x180/ce93d8/ffffff?text=JS+Perf"
+              alt="JavaScript 性能优化指南"
+              loading="lazy"
+            />
+            <div class="article-info">
+              <h3>JavaScript 性能优化指南</h3>
+              <p class="article-excerpt">
+                性能是用户体验的关键。本文将从多个维度为你剖析 JavaScript
+                的性能瓶颈和优化策略，包括渲染优化、内存管理、异步加载与缓存策略。
+              </p>
+              <div class="article-meta">
+                <div class="tags">
+                  <span>技术</span>
+                  <span>JavaScript</span>
+                </div>
+                <span>2026-01-10 · 阅读量 1,567 · 评论 23</span>
+              </div>
+            </div>
+          </article>
+
+          <!-- 文章 4 -->
+          <article class="article-row" data-category="技术" data-tag="Vue">
+            <img
+              src="https://via.placeholder.com/300x180/f3e5f5/333333?text=Vue3"
+              alt="Vue3 组合式 API 实战"
+              loading="lazy"
+            />
+            <div class="article-info">
+              <h3>Vue3 组合式 API 实战</h3>
+              <p class="article-excerpt">
+                Vue3 带来的组合式 API
+                让逻辑复用更加灵活。本文通过实战案例，演示如何用 Composition API
+                重构组件，提升代码可维护性与类型安全。
+              </p>
+              <div class="article-meta">
+                <div class="tags">
+                  <span>技术</span>
+                  <span>Vue</span>
+                </div>
+                <span>2026-01-12 · 阅读量 892 · 评论 15</span>
+              </div>
+            </div>
+          </article>
+
+          <!-- 文章 5 -->
+          <article class="article-row" data-category="随笔" data-tag="设计">
+            <img
+              src="https://via.placeholder.com/300x180/9c27b0/ffffff?text=Design+System"
+              alt="构建你的设计系统"
+              loading="lazy"
+            />
+            <div class="article-info">
+              <h3>构建你的设计系统</h3>
+              <p class="article-excerpt">
+                设计系统让产品保持一致性。从颜色、字体到组件库，本文手把手带你用
+                Figma + Storybook 打造可落地的设计系统，并同步到前端组件库。
+              </p>
+              <div class="article-meta">
+                <div class="tags">
+                  <span>随笔</span>
+                  <span>设计</span>
+                </div>
+                <span>2026-01-15 · 阅读量 654 · 评论 6</span>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <!-- 分页组件 -->
+        <div class="pagination">
+          <a href="#">上一页</a>
+          <a href="#" class="active">1</a>
+          <a href="#">2</a>
+          <a href="#">3</a>
+          <a href="#">4</a>
+          <a href="#">5</a>
+          <a href="#">下一页</a>
+        </div>
+      </main>
+
+      <!-- 侧边栏 -->
+      <aside class="sidebar">
+        <!-- 热门文章 -->
+        <div class="widget">
+          <h4>热门文章</h4>
+          <ul class="hot-articles">
+            <li><a href="#">CSS Grid 布局的高级技巧</a></li>
+            <li><a href="#">JavaScript 性能优化指南</a></li>
+            <li><a href="#">响应式设计的最佳实践</a></li>
+            <li><a href="#">Vue3 组合式 API 实战</a></li>
+          </ul>
+        </div>
+
+        <!-- 文章分类 -->
+        <div class="widget">
+          <h4>文章分类</h4>
+          <ul>
+            <li>
+              <a href="javascript:filterByCategory('前端')"
+                >前端 <span>(12)</span></a
+              >
+            </li>
+            <li>
+              <a href="javascript:filterByCategory('技术')"
+                >技术 <span>(6)</span></a
+              >
+            </li>
+            <li>
+              <a href="javascript:filterByCategory('随笔')"
+                >随笔 <span>(3)</span></a
+              >
+            </li>
+          </ul>
+        </div>
+
+        <!-- 标签云 -->
+        <div class="widget">
+          <h4>标签云</h4>
+          <div class="tags-cloud">
+            <span class="tag" onclick="filterByTag('CSS')">CSS</span>
+            <span class="tag" onclick="filterByTag('JavaScript')"
+              >JavaScript</span
+            >
+            <span class="tag" onclick="filterByTag('Vue')">Vue</span>
+            <span class="tag" onclick="filterByTag('React')">React</span>
+            <span class="tag" onclick="filterByTag('性能优化')">性能优化</span>
+            <span class="tag" onclick="filterByTag('设计')">设计系统</span>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- 页脚 -->
+    <footer>
+      <p>© 2026 网页设计个人网站 版权所有</p>
+    </footer>
+  </body>
+</html>

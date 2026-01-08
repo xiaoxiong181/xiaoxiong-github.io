@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet icon" href="pp.jpg">
+    <title>个人介绍网站</title>
+    <style>
+      /* 基础样式重置 */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px); /* 轻微向下偏移，增加动感 */
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* 新增：全局内容容器加载动画样式 */
+      .page-container {
+        animation: fadeIn 2s ease-in-out forwards; /* 1秒动画，缓入缓出 */
+        opacity: 0; /* 初始透明，等待动画触发 */
+      }
+
+      /* 全局样式 - 紫色系网页设计主题 */
+      body {
+        background-color: #f9f6fc;
+        font-family: "Microsoft YaHei", sans-serif;
+        color: #333;
+        padding-top: 80px; /* 为固定导航栏预留空间 */
+      }
+      /* 头部导航 - 固定定位+紫色装饰 */
+      .header {
+        width: 100%;
+        height: 80px;
+        padding: 0 5%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #fff;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 9999;
+        box-shadow: 0 2px 10px rgba(156, 39, 176, 0.1);
+        border-bottom: 2px solid #9c27b0;
+        overflow: hidden;
+        transition: height 0.3s ease;
+      }
+      /* logo 样式 */
+      .logo h1 {
+        color: #9c27b0;
+        font-size: 24px;
+        letter-spacing: 1px;
+      }
+      /* 桌面端导航链接样式 */
+      .nav {
+        display: flex;
+        align-items: center;
+      }
+      .nav a {
+        text-decoration: none;
+        font-size: 16px;
+        margin-left: 30px;
+        padding: 5px 10px;
+        border-radius: 5px;
+        transition: all 0.3s ease;
+        color: #333; /* 补充原样式缺失的默认文字颜色 */
+      }
+      .nav a:hover {
+        background: #9c27b0;
+        color: #fff;
+      }
+      /* 导航链接 悬停+激活态 */
+      .nav a:active {
+        background-color: #9c27b0;
+        color: #fff;
+      }
+      /* 移动端汉堡菜单按钮 - 默认隐藏 */
+      .menu-btn {
+        display: none;
+        font-size: 28px;
+        color: #9c27b0;
+        cursor: pointer;
+        z-index: 10000;
+      }
+      /* 内容板块通用样式 - 统一内边距和间距 */
+      .section {
+        width: 80%;
+        max-width: 1200px;
+        margin: 50px auto;
+        padding: 40px;
+        background-color: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+      }
+      /* 板块标题通用样式 - 统一下划线和间距 */
+      .section h2 {
+        color: #9c27b0;
+        margin-bottom: 30px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid #ce93d8;
+        font-size: 22px;
+      }
+      .section h3 {
+        color: #7b1fa2;
+        margin: 0 0 20px 0;
+        font-size: 18px;
+        padding-left: 5px;
+        border-left: 3px solid #9c27b0;
+      }
+      /* 模块通用间距 - 所有模块统一底部间距 */
+      .module {
+        margin-bottom: 35px;
+      }
+      /* 个人信息样式 - 弹性布局垂直居中对齐 */
+      .profile.module {
+        display: flex;
+        align-items: center;
+        gap: 40px;
+      }
+      /* 个人头像样式 - 固定尺寸+圆形 */
+      .profile img {
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid #ce93d8;
+        flex-shrink: 0; /* 防止头像压缩 */
+      }
+      .profile-info {
+        flex: 1;
+      }
+      .profile-info p {
+        line-height: 1.8;
+        color: #555;
+        margin-bottom: 12px;
+        font-size: 15px;
+      }
+      /* 社交链接图标样式 */
+      .social-links {
+        margin-top: 15px;
+      }
+      .social-links a {
+        display: inline-block;
+        width: 36px;
+        height: 36px;
+        line-height: 36px;
+        text-align: center;
+        background-color: #f3e5f5;
+        color: #9c27b0;
+        border-radius: 50%;
+        margin-right: 10px;
+        transition: all 0.3s ease;
+      }
+      .social-links a:hover {
+        background-color: #9c27b0;
+        color: #fff;
+      }
+      /* 项目经验展示栏 - 网格布局+统一卡片样式 */
+      .projects.module {
+        padding: 25px;
+        background-color: #faf5fc;
+        border-radius: 10px;
+      }
+      .project-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+      }
+      .project-item {
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        border-left: 3px solid #9c27b0;
+        box-shadow: 0 2px 5px rgba(156, 39, 176, 0.08);
+        transition: all 0.3s ease-in-out;
+        position: relative;
+        top: 0;
+      }
+      .project-item h4 {
+        color: #7b1fa2;
+        margin-bottom: 10px;
+        font-size: 16px;
+      }
+      .project-item p {
+        font-size: 14px;
+        line-height: 1.6;
+        margin-bottom: 10px;
+      }
+      .project-tag {
+        display: inline-block;
+        margin-right: 5px;
+        padding: 3px 8px;
+        background-color: #f3e5f5;
+        color: #9c27b0;
+        font-size: 12px;
+        border-radius: 4px;
+      }
+      .project-item:hover {
+        transform: scale(1.03);
+        top: -5px;
+        box-shadow: 0 8px 15px rgba(156, 39, 176, 0.15);
+        border-left-color: #7b1fa2;
+        cursor: pointer;
+      }
+      /* 自我评价模块 - 统一内边距+背景 */
+      .self-eval.module {
+        padding: 25px;
+        background-color: #faf5fc;
+        border-radius: 10px;
+        line-height: 1.8;
+        color: #555;
+        font-size: 15px;
+      }
+      /* 荣誉证书展示 - 网格布局+统一间距 */
+      .honors.module .honor-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+      }
+      .honor-item {
+        text-align: center;
+        padding: 15px;
+        border-radius: 8px;
+        transition: transform 0.3s ease;
+      }
+      .honor-item:hover {
+        transform: translateY(-3px);
+      }
+      .honor-item img {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 2px solid #f3e5f5;
+        margin-bottom: 10px;
+      }
+      .honor-item p {
+        color: #555;
+        font-size: 14px;
+      }
+      /* 精选文章展示区 - 网格布局+卡片对齐 */
+      .articles.module {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+      }
+      .article-card {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+        transition: transform 0.3s ease;
+        position: relative;
+        min-height: 250px;
+        padding-bottom: 50px;
+      }
+      .article-card:hover {
+        transform: translateY(-5px);
+      }
+      .article-card img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+      }
+      .article-content {
+        padding: 20px;
+      }
+      .article-content h3 {
+        color: #9c27b0;
+        margin-bottom: 10px;
+        border: none;
+        padding: 0;
+      }
+      .article-meta {
+        font-size: 14px;
+        color: #999;
+        margin-bottom: 15px;
+      }
+      .article-excerpt {
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 20px;
+      }
+      .read-more {
+        display: inline-block;
+        padding: 8px 15px;
+        background-color: #9c27b0;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 14px;
+        transition: background-color 0.3s ease;
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+      }
+      .read-more:hover {
+        background-color: #7b1fa2;
+      }
+      /* 技能标签云样式 - 对齐整齐 */
+      .skills-section {
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+      .skills-title {
+        font-size: 20px;
+        color: #333;
+        margin-bottom: 15px;
+        font-weight: bold;
+      }
+      .tags-cloud.module {
+        padding: 10px 0;
+      }
+      .tags-cloud {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+      }
+      .tag {
+        padding: 8px 15px;
+        background-color: #f3e5f5;
+        color: #7b1fa2;
+        border-radius: 20px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        display: inline-block; /* 补充标签行内块样式，防止换行异常 */
+      }
+      .tag:hover {
+        background-color: #9c27b0;
+        color: #fff;
+      }
+
+      /* 页脚样式 */
+      footer {
+        text-align: center;
+        padding: 20px;
+        color: #7b1fa2;
+        background-color: #f3e5f5;
+        margin-top: 50px;
+        /* 页脚同步淡入动画，延迟0.2秒，增加层次感 */
+        animation: fadeIn 1s ease-in-out 0.2s forwards;
+        opacity: 0;
+      }
+      /* ========== 响应式布局 ========== */
+      /* 平板设备 (小于1024px) */
+      @media (max-width: 1024px) {
+        .profile.module {
+          flex-direction: column;
+          text-align: center;
+          gap: 20px;
+        }
+        .section {
+          width: 90%;
+          padding: 30px;
+        }
+      }
+      /* 手机设备 (小于768px) */
+      @media (max-width: 768px) {
+        .header {
+          height: auto;
+          padding: 15px 5%;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0;
+        }
+        .nav {
+          display: none;
+          flex-direction: column;
+          width: 100%;
+          margin-top: 15px;
+          gap: 10px;
+        }
+        .nav a {
+          margin: 0;
+          padding: 10px;
+          width: 100%;
+          border-radius: 3px;
+        }
+        .menu-btn {
+          display: block;
+          position: absolute;
+          top: 20px;
+          right: 5%;
+        }
+        .nav.active {
+          display: flex;
+        }
+        body {
+          padding-top: 60px;
+        }
+        .section {
+          width: 95%;
+          padding: 20px;
+        }
+        .project-list,
+        .honor-list,
+        .articles.module {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 头部导航（单独设置淡入动画，延迟0.1秒） -->
+    <div
+      class="header"
+      style="animation: fadeIn 1s ease-in-out 0.1s forwards; opacity: 0"
+    >
+      <div class="logo">
+        <h1>熊洁·个人主页</h1>
+      </div>
+      <div class="menu-btn" id="menuBtn">☰</div>
+      <div class="nav" id="navMenu">
+        <a href="1.html">首页</a>
+        <a href="2.html">技术博客</a>
+        <a href="3.html">博客详情</a>
+        <a href="4.html">作品展示</a>
+        <a href="5.html">联系我们</a>
+      </div>
+    </div>
+
+    <!-- 新增：页面核心容器，包裹所有内容，触发淡入动画 -->
+    <div class="page-container">
+      <!-- 首页板块 - 所有模块添加 .module 类统一间距 -->
+      <div id="home" class="section">
+        <h2>欢迎来到我的网页设计世界</h2>
+
+        <!-- 个人信息模块 -->
+        <div class="profile module">
+          <img src="./QQ20260108-143206.png" alt="熊洁头像" />
+          <div class="profile-info">
+            <p><strong>姓名：</strong>小熊</p>
+            <p><strong>签名：</strong>代码创造艺术，设计赋予灵魂</p>
+            <p>
+              <strong>简介：</strong
+              >一名热爱网页设计的前端开发者，专注于用户体验与视觉设计的完美结合，擅长使用HTML、CSS和JavaScript构建美观且实用的网站。
+            </p>
+            <div class="social-links">
+              <a href="#" title="GitHub">💻</a>
+              <a href="#" title="Codepen">✏️</a>
+              <a href="#" title="LinkedIn">💼</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- 项目经验模块 -->
+        <div class="projects module">
+          <h3>项目经验</h3>
+          <div class="project-list">
+            <div class="project-item">
+              <h4>茶文化主题响应式网站</h4>
+              <p>
+                独立完成需求分析、页面设计与前端开发，实现茶品展示、茶艺文化科普、用户留言等功能，兼容PC端与移动端。
+              </p>
+              <span class="project-tag">HTML/CSS</span>
+              <span class="project-tag">原生JS</span>
+              <span class="project-tag">响应式布局</span>
+            </div>
+            <div class="project-item">
+              <h4>银发安防IP形象官网</h4>
+              <p>
+                为大学生竞赛项目设计开发品牌官网，融合IP形象展示、产品介绍、市场分析模块，提升品牌辨识度与传播力。
+              </p>
+              <span class="project-tag">Vue.js</span>
+              <span class="project-tag">UI设计</span>
+              <span class="project-tag">竞赛项目</span>
+            </div>
+            <div class="project-item">
+              <h4>个人作品集展示平台</h4>
+              <p>
+                搭建个人设计与开发作品展示平台，支持作品分类筛选、详情预览，优化图片懒加载提升页面加载速度。
+              </p>
+              <span class="project-tag">性能优化</span>
+              <span class="project-tag">作品展示</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 自我评价模块 -->
+        <div class="self-eval module">
+          <h3>自我评价</h3>
+          <p>
+            具备扎实的前端开发基础与良好的视觉设计素养，善于将创意想法转化为落地的网页产品。对待项目认真负责，注重细节打磨与用户体验优化，乐于学习新技术、探索新玩法。在团队协作中，能够高效沟通需求，配合完成项目目标；在个人项目中，能够独立规划开发流程，解决技术难题。
+          </p>
+        </div>
+
+        <!-- 荣誉证书模块 -->
+        <div class="honors module">
+          <h3>荣誉证书</h3>
+          <div class="honor-list">
+            <div class="honor-item">
+              <img
+                src="https://via.placeholder.com/200x150/9c27b0/ffffff?text=WebDesignAward"
+                alt="网页设计大赛奖项"
+              />
+              <p>省级大学生网页设计大赛一等奖</p>
+            </div>
+            <div class="honor-item">
+              <img
+                src="https://via.placeholder.com/200x150/7b1fa2/ffffff?text=FrontendCert"
+                alt="前端开发认证"
+              />
+              <p>前端开发工程师技能认证</p>
+            </div>
+            <div class="honor-item">
+              <img
+                src="https://via.placeholder.com/200x150/ce93d8/ffffff?text=UXAward"
+                alt="用户体验设计奖项"
+              />
+              <p>校园用户体验设计创新奖</p>
+            </div>
+            <div class="honor-item">
+              <img
+                src="https://via.placeholder.com/200x150/f3e5f5/333333?text=Competition"
+                alt="创新创业大赛奖项"
+              />
+              <p>大学生创新创业大赛银奖</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 技术博客模块 -->
+        <h3>技术博客</h3>
+        <div class="articles module">
+          <div class="article-card">
+            <img src="image_download_1757760958064.jpg" alt="文章封面" />
+            <div class="article-content">
+              <h3>CSS Grid 布局的高级技巧</h3>
+              <div class="article-meta">发布于 2026-01-01</div>
+              <p class="article-excerpt">
+                CSS Grid
+                是现代网页布局的强大工具，本文将带你深入探索其高级用法，实现复杂而灵活的页面布局...
+              </p>
+              <a href="#" class="read-more">阅读更多</a>
+            </div>
+          </div>
+          <div class="article-card">
+            <img src="https://via.placeholder.com/300x180" alt="文章封面" />
+            <div class="article-content">
+              <h3>响应式设计的最佳实践</h3>
+              <div class="article-meta">发布于 2026-01-05</div>
+              <p class="article-excerpt">
+                在多设备时代，响应式设计至关重要。本文总结了一套行之有效的响应式设计工作流和最佳实践...
+              </p>
+              <a href="#" class="read-more">阅读更多</a>
+            </div>
+          </div>
+          <div class="article-card">
+            <img src="https://via.placeholder.com/300x180" alt="文章封面" />
+            <div class="article-content">
+              <h3>JavaScript 性能优化指南</h3>
+              <div class="article-meta">发布于 2026-01-10</div>
+              <p class="article-excerpt">
+                性能是用户体验的关键。本文将从多个维度为你剖析 JavaScript
+                的性能瓶颈和优化策略...
+              </p>
+              <a href="#" class="read-more">阅读更多</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- 技能标签模块 -->
+        <div class="skills-section">
+          <h3>我的技能</h3>
+          <div class="skills-title">
+            <span class="tag">HTML5</span>
+            <span class="tag">CSS3</span>
+            <span class="tag">JavaScript</span>
+            <span class="tag">React</span>
+            <span class="tag">Vue.js</span>
+            <span class="tag">UI设计</span>
+            <span class="tag">用户体验</span>
+            <span class="tag">响应式布局</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer>
+      <p>© 2026 网页设计个人网站 版权所有</p>
+    </footer>
+
+    <!-- JavaScript 汉堡菜单交互 -->
+    <script>
+      const menuBtn = document.getElementById("menuBtn");
+      const navMenu = document.getElementById("navMenu");
+      menuBtn.addEventListener("click", function () {
+        navMenu.classList.toggle("active");
+        menuBtn.textContent = navMenu.classList.contains("active") ? "✕" : "☰";
+      });
+    </script>
+  </body>
+</html>
